@@ -11,7 +11,7 @@
 ---
 
 ## 🚀 Live Demo & Repository
-- **GitHub Repository**: [https://github.com/your-username/personalized-content-dashboard](https://github.com)
+- **GitHub Repository**: [https://github.com/shannu144/PulseBoard](https://github.com/shannu144/PulseBoard)
 - **Live Hosted Application**: [https://pulseboard-dashboard.vercel.app](https://vercel.com)
 - **Demo Video**: [Walkthrough Loom / Drive Video Link](https://loom.com)
 
@@ -140,8 +140,8 @@ The application state is partitioned into four modular slices:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/personalized-content-dashboard.git
-   cd personalized-content-dashboard
+   git clone https://github.com/shannu144/PulseBoard.git
+   cd PulseBoard
    ```
 
 2. **Install dependencies**:

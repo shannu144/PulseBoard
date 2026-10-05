@@ -26,12 +26,14 @@ interface ContentCardProps {
   item: ContentItem;
   isDragEnabled?: boolean;
   onShare?: (item: ContentItem) => void;
+  onOpenReader?: (item: ContentItem) => void;
 }
 
 export const ContentCard: React.FC<ContentCardProps> = ({
   item,
   isDragEnabled = false,
   onShare,
+  onOpenReader,
 }) => {
   const dispatch = useAppDispatch();
   const favoriteIds = useAppSelector((state) => state.favorites.itemIds);
@@ -41,6 +43,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
 
   const isFavorited = favoriteIds.includes(item.id);
   const [copied, setCopied] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -129,14 +132,23 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               isVisual ? "h-52" : "h-40"
             }`}
           >
-            <Image
-              src={item.imageUrl}
-              alt={item.title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
+            {!imgError ? (
+              <Image
+                src={item.imageUrl}
+                alt={item.title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-slate-800 flex items-center justify-center p-4 text-center">
+                <span className="text-xs font-semibold text-indigo-400 capitalize">
+                  {item.category} • {item.source}
+                </span>
+              </div>
+            )}
             {item.rating && (
               <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/70 backdrop-blur-md text-amber-400 text-xs font-semibold shadow-md">
                 <Star className="w-3.5 h-3.5 fill-current" />
@@ -170,9 +182,10 @@ export const ContentCard: React.FC<ContentCardProps> = ({
 
         {/* Title */}
         <h3
+          onClick={() => onOpenReader && onOpenReader(item)}
           className={`font-semibold text-slate-900 dark:text-white leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2 ${
-            isCompact ? "text-sm mb-1.5" : "text-base mb-2"
-          }`}
+            onOpenReader ? "cursor-pointer" : ""
+          } ${isCompact ? "text-sm mb-1.5" : "text-base mb-2"}`}
         >
           {item.title}
         </h3>
@@ -236,29 +249,53 @@ export const ContentCard: React.FC<ContentCardProps> = ({
         </div>
 
         {/* Action Button */}
-        <a
-          href={item.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 font-medium text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group-hover:translate-x-0.5 transition-all"
-        >
-          {item.type === "recommendation" ? (
-            <>
-              <Play className="w-3 h-3 fill-current" />
-              <span>{t.playNow}</span>
-            </>
-          ) : item.type === "social" ? (
-            <>
-              <ExternalLink className="w-3 h-3" />
-              <span>{t.viewPost}</span>
-            </>
-          ) : (
-            <>
-              <span>{t.readMore}</span>
-              <ExternalLink className="w-3 h-3" />
-            </>
-          )}
-        </a>
+        {onOpenReader ? (
+          <button
+            onClick={() => onOpenReader(item)}
+            className="inline-flex items-center gap-1 font-medium text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group-hover:translate-x-0.5 transition-all"
+          >
+            {item.type === "recommendation" ? (
+              <>
+                <Play className="w-3 h-3 fill-current" />
+                <span>{t.playNow}</span>
+              </>
+            ) : item.type === "social" ? (
+              <>
+                <ExternalLink className="w-3 h-3" />
+                <span>{t.viewPost}</span>
+              </>
+            ) : (
+              <>
+                <span>{t.readMore}</span>
+                <ExternalLink className="w-3 h-3" />
+              </>
+            )}
+          </button>
+        ) : (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 font-medium text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group-hover:translate-x-0.5 transition-all"
+          >
+            {item.type === "recommendation" ? (
+              <>
+                <Play className="w-3 h-3 fill-current" />
+                <span>{t.playNow}</span>
+              </>
+            ) : item.type === "social" ? (
+              <>
+                <ExternalLink className="w-3 h-3" />
+                <span>{t.viewPost}</span>
+              </>
+            ) : (
+              <>
+                <span>{t.readMore}</span>
+                <ExternalLink className="w-3 h-3" />
+              </>
+            )}
+          </a>
+        )}
       </div>
     </motion.div>
   );

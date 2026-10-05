@@ -17,8 +17,14 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { TRANSLATIONS } from "@/utils/translations";
 
-export const FavoritesSection: React.FC<{ onNavigateToFeed: () => void }> = ({
+interface FavoritesSectionProps {
+  onNavigateToFeed: () => void;
+  onOpenReader?: (item: ContentItem) => void;
+}
+
+export const FavoritesSection: React.FC<FavoritesSectionProps> = ({
   onNavigateToFeed,
+  onOpenReader,
 }) => {
   const dispatch = useAppDispatch();
   const favoriteItems = useAppSelector((state) => state.favorites.items);
@@ -143,7 +149,12 @@ export const FavoritesSection: React.FC<{ onNavigateToFeed: () => void }> = ({
       ) : (
         <div className={`grid ${gridColsClass}`}>
           {filteredFavorites.map((item) => (
-            <ContentCard key={item.id} item={item} isDragEnabled={false} />
+            <ContentCard
+              key={item.id}
+              item={item}
+              isDragEnabled={false}
+              onOpenReader={onOpenReader}
+            />
           ))}
         </div>
       )}

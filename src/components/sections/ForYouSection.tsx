@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Sparkles, RefreshCw, Layers } from "lucide-react";
+import { Sparkles, RefreshCw, Layers, PlusCircle } from "lucide-react";
 import { ContentItem } from "@/types";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { ContentGrid } from "@/components/feed/ContentGrid";
 import { FeedFilters } from "@/components/feed/FeedFilters";
 import { LiveTicker } from "@/components/feed/LiveTicker";
+import { DailyBriefingBanner } from "@/components/feed/DailyBriefingBanner";
 import { EmptyState } from "@/components/feed/EmptyState";
 import { Button } from "@/components/ui/Button";
 import {
@@ -18,7 +19,15 @@ import {
 } from "@/store/slices/feedSlice";
 import { TRANSLATIONS } from "@/utils/translations";
 
-export const ForYouSection: React.FC = () => {
+interface ForYouSectionProps {
+  onOpenReader: (item: ContentItem) => void;
+  onOpenCreatePost: () => void;
+}
+
+export const ForYouSection: React.FC<ForYouSectionProps> = ({
+  onOpenReader,
+  onOpenCreatePost,
+}) => {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.feed.items);
   const searchQuery = useAppSelector((state) => state.feed.searchQuery);
@@ -113,6 +122,9 @@ export const ForYouSection: React.FC = () => {
       {/* Real-time Ticker & Alert Bar */}
       <LiveTicker />
 
+      {/* Morning AI Intelligence Brief */}
+      <DailyBriefingBanner />
+
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
@@ -125,8 +137,19 @@ export const ForYouSection: React.FC = () => {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Curated feed based on your subscribed topics. Drag cards to reorder.
+            Curated feed based on your subscribed topics. Click any card to read story, or drag to reorder.
           </p>
+        </div>
+
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Button
+            size="sm"
+            onClick={onOpenCreatePost}
+            className="shadow-sm shadow-indigo-500/20"
+          >
+            <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+            <span>Create Story</span>
+          </Button>
         </div>
       </div>
 
@@ -143,7 +166,11 @@ export const ForYouSection: React.FC = () => {
         />
       ) : (
         <>
-          <ContentGrid items={paginatedItems} enableDrag={true} />
+          <ContentGrid
+            items={paginatedItems}
+            enableDrag={true}
+            onOpenReader={onOpenReader}
+          />
 
           {/* Infinite Scroll / Load More Trigger */}
           {hasMore && (

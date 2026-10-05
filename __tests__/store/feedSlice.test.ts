@@ -4,6 +4,7 @@ import feedReducer, {
   setSelectedCategoryFilter,
   setSortBy,
   reorderFeedItems,
+  addNewPost,
   addRealtimeItem,
   applyPendingUpdates,
   dismissPendingUpdates,
@@ -93,6 +94,24 @@ describe("feedSlice", () => {
     expect(appliedState.items).toHaveLength(3);
     expect(appliedState.items[0].id).toBe("realtime-1");
     expect(appliedState.pendingRealtimeItems).toHaveLength(0);
+  });
+
+  it("should prepend new post to items and customOrderIds via addNewPost", () => {
+    const customStory: ContentItem = {
+      id: "custom-1",
+      type: "news",
+      category: "technology",
+      source: "TechCrunch",
+      title: "My Custom Headline",
+      description: "My custom post content",
+      url: "https://example.com/custom",
+      imageUrl: "https://example.com/custom.jpg",
+      publishedAt: new Date().toISOString(),
+    };
+
+    const state = feedReducer(baseState, addNewPost(customStory));
+    expect(state.items[0].id).toBe("custom-1");
+    expect(state.items[0].title).toBe("My Custom Headline");
   });
 
   it("should increment page when loadMore is triggered", () => {

@@ -100,6 +100,13 @@ export const feedSlice = createSlice({
       state.customOrderIds = action.payload.map((item) => item.id);
       safeStorage.set(ORDER_STORAGE_KEY, state.customOrderIds);
     },
+    addNewPost: (state, action: PayloadAction<ContentItem>) => {
+      state.items.unshift(action.payload);
+      if (state.customOrderIds.length > 0) {
+        state.customOrderIds.unshift(action.payload.id);
+        safeStorage.set(ORDER_STORAGE_KEY, state.customOrderIds);
+      }
+    },
     addRealtimeItem: (state, action: PayloadAction<ContentItem>) => {
       // Add to pending real-time queue so user is not disoriented by jarring layout shift
       // User can click "New Updates Waiting" or it flows in seamlessly
@@ -167,6 +174,7 @@ export const {
   setSelectedCategoryFilter,
   setSortBy,
   reorderFeedItems,
+  addNewPost,
   addRealtimeItem,
   applyPendingUpdates,
   dismissPendingUpdates,

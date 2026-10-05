@@ -8,7 +8,11 @@ import { useAppSelector } from "@/store/hooks";
 import { ContentCard } from "@/components/feed/ContentCard";
 import { TRANSLATIONS } from "@/utils/translations";
 
-export const TrendingSection: React.FC = () => {
+interface TrendingSectionProps {
+  onOpenReader?: (item: ContentItem) => void;
+}
+
+export const TrendingSection: React.FC<TrendingSectionProps> = ({ onOpenReader }) => {
   const items = useAppSelector((state) => state.feed.items);
   const lang = useAppSelector((state) => state.preferences.language);
   const density = useAppSelector((state) => state.preferences.contentDensity);
@@ -100,7 +104,11 @@ export const TrendingSection: React.FC = () => {
             <div className="absolute -top-2.5 -left-2.5 z-20 flex items-center justify-center w-7 h-7 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md font-mono text-xs font-bold ring-2 ring-white dark:ring-slate-900">
               #{index + 1}
             </div>
-            <ContentCard item={item} isDragEnabled={false} />
+            <ContentCard
+              item={item}
+              isDragEnabled={false}
+              onOpenReader={onOpenReader}
+            />
           </div>
         ))}
       </div>
